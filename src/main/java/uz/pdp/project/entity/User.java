@@ -32,6 +32,8 @@ public class User implements UserDetails {
     private String verificationCode;//code uchun
 
 
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
@@ -64,7 +66,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return verificationCode == null;   // kod tekshirilgan bo‘lsa true
     }
 
 
