@@ -15,6 +15,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(registry -> {
             registry
                     .requestMatchers("login", "/").permitAll()
+                    .requestMatchers("register", "/").permitAll()
                     .requestMatchers("/api/auth/register").permitAll()
                     .anyRequest().authenticated();
         });
