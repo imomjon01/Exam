@@ -14,7 +14,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(registry -> {
             registry
-                    .requestMatchers("login","/").permitAll()
+                    .requestMatchers("login", "/").permitAll()
+                    .requestMatchers("/api/auth/register").permitAll()
                     .anyRequest().authenticated();
         });
 
@@ -33,8 +34,9 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
     }
 }
