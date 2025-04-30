@@ -29,7 +29,10 @@ public class User implements UserDetails {
     private Attachment attachment;
 
     @Transient
-    private String verificationCode;//code uchun
+    private String passwordRepeat;
+
+    @Transient
+    private boolean verificationCode;//code uchun
 
 
 
@@ -63,11 +66,5 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return false;
     }
-
-    @Override
-    public boolean isEnabled() {
-        return verificationCode == null;   // kod tekshirilgan bo‘lsa true
-    }
-
 
 }
