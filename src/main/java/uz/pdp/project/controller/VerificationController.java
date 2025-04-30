@@ -28,18 +28,13 @@ public class VerificationController {
 
     @GetMapping("/verify")
     public String verification(HttpSession session) {
-
         String randomCode = emailSender.randomCode();
         System.out.println("Random code yaratildi");
         UserRegisterDto user = (UserRegisterDto) session.getAttribute("user");
-        System.out.println("User sessiondan olindi");
         String email = user.getEmail();
         emailSender.sendEmail(email, randomCode);
-        System.out.println("Email yuborildi");
         user.setRandomCode(randomCode);
-        System.out.println("Random code saqlandi");
         session.setAttribute("user", user);
-        System.out.println("User qayta set qilindi");
         return "/verification";
     }
 

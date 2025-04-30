@@ -19,7 +19,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers("/login", "/register","/cabinet",
+                            .requestMatchers( "/register","/cabinet",
                                     "/default.jpg","/verify","/register/process",
                                     "/verify/process").permitAll()
                             .anyRequest().authenticated();
@@ -27,8 +27,7 @@ public class SecurityConfig {
                 });
 
         http.formLogin(formLogin -> {
-            /*            formLogin.defaultSuccessUrl("#", true).permitAll();*/
-
+            formLogin.defaultSuccessUrl("/", true);
         });
 
         http.logout(logout ->
