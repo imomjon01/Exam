@@ -17,6 +17,7 @@ public class SecurityConfig {
                     .requestMatchers("login", "/").permitAll()
                     .requestMatchers("register", "/").permitAll()
                     .requestMatchers("/api/auth/register").permitAll()
+                    .requestMatchers("/task/**").permitAll()
                     .anyRequest().authenticated();
         });
 

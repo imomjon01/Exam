@@ -19,8 +19,11 @@ public class TaskService {
     }
 
 
-
-
-
+    public List<Task> getActiveStatusTasks() {
+        return taskRepository.findByStatusActiveTrue();
+    }
+    public Task saveTask(Task task) {
+        return taskRepository.save(task);
+    }
 }
 

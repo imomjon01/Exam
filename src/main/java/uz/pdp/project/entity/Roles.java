@@ -4,5 +4,5 @@ public enum Roles {
     //tegmang
     ADMIN,
     PROGRAMMER,
-    MOUNTAIN
+    MAINTAINER
 }
