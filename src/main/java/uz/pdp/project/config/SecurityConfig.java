@@ -21,7 +21,8 @@ public class SecurityConfig {
                     auth
                             .requestMatchers( "/register","/cabinet","/",
                                     "/default.jpg","/verify","/register/process",
-                                    "/verify/process", "/task").permitAll()
+                                    "/verify/process").permitAll()
+                            .requestMatchers("/css/**", "/js/**", "/task/**").permitAll()
                             .anyRequest().authenticated();
 
                 });

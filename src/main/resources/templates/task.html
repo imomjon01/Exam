@@ -1,100 +1,163 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Task board</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Task Board</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        .card-placeholder {
+            height: 140px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
-<!-- ADMIN / MAINTAINER uchun menyu -->
-<div class="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2"
-     sec:authorize="hasAnyRole('ADMIN','MAINTAINER')">
-    <a class="btn btn-outline-primary btn-sm" th:href="@{/status/add}">Add status</a>
-    <a class="btn btn-outline-success btn-sm" th:href="@{/task/add}">Add task</a>
-    <a class="btn btn-outline-secondary btn-sm" th:href="@{/task/manage-orders}">Manage orders</a>
+<!-- NAVBAR -->
+<nav class="navbar navbar-light bg-white border-bottom px-3">
+    <button class="btn btn-success me-2" data-bs-toggle="collapse" data-bs-target="#taskForm">
+        Add Task
+    </button>
+    <button class="btn btn-outline-primary me-2">Add</button>
+    <button class="btn btn-secondary">Manage Orders</button>
+</nav>
+
+<!-- COLLAPSIBLE ADD-TASK FORM -->
+<div id="taskForm" class="collapse bg-white p-3 border-bottom">
+    <form th:action="@{/task/tasks}"
+          th:object="${newTask}"
+          method="post"
+          enctype="multipart/form-data"
+          class="row g-2">
+
+        <!-- CSRF token -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <!-- Title -->
+        <div class="col-md-6">
+            <input th:field="*{title}"
+                   class="form-control"
+                   placeholder="Task title"/>
+        </div>
+
+        <!-- Status dropdown -->
+        <div class="col-md-4">
+            <select th:field="*{status.id}" class="form-select">
+                <option th:each="s : ${statuses}"
+                        th:value="${s.id}"
+                        th:text="${s.name}"></option>
+            </select>
+        </div>
+
+        <!-- File upload -->
+        <div class="col-md-2">
+            <input type="file" name="file" class="form-control"/>
+        </div>
+
+        <!-- Submit -->
+        <div class="col-12 text-end">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
 </div>
 
-<!-- BOARD -->
+<!-- TASK BOARD -->
 <div class="container-fluid py-4">
-    <div class="row flex-nowrap gx-3 overflow-auto">
+    <div class="row gx-3">
 
-        <!-- STATUS ustuni -->
-        <div class="col-12 col-md-4 col-lg-3" th:each="status : ${statusList}">
-            <div class="border rounded p-3 bg-white h-100 d-flex flex-column">
+        <!-- OPEN COLUMN -->
+        <div class="col">
+            <h5 class="text-center">OPEN</h5>
+            <div th:each="task : ${openTasks}" class="card mb-3">
+                <img th:if="${task.attachment != null}"
+                     th:src="@{/task/attachments/{id}(id=${task.attachment.id})}"
+                     class="card-img-top" alt="Attachment"/>
+                <div th:unless="${task.attachment != null}" class="card-placeholder">No Image</div>
+                <div class="card-body">
+                    <p class="fw-bold mb-1" th:text="${task.title}">Title</p>
+                    <p class="text-muted mb-3" th:text="${task.user.username}">User</p>
+                    <div class="d-flex justify-content-between">
+                        <span></span>
+                        <form th:action="@{|/task/tasks/${task.id}/delete|}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                        <form th:action="@{|/task/tasks/${task.id}/move|}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="dir" value="right"/>
+                            <button class="btn btn-sm btn-primary">&rarr;</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <!-- sarlavha -->
-                <h6 class="text-center fw-bold mb-3" th:text="${status.name}">Status</h6>
+        <!-- INPROGRESS COLUMN -->
+        <div class="col">
+            <h5 class="text-center">INPROGRESS</h5>
+            <div th:each="task : ${inProgressTasks}" class="card mb-3">
+                <img th:if="${task.attachment != null}"
+                     th:src="@{/task/attachments/{id}(id=${task.attachment.id})}"
+                     class="card-img-top" alt="Attachment"/>
+                <div th:unless="${task.attachment != null}" class="card-placeholder">No Image</div>
+                <div class="card-body">
+                    <p class="fw-bold mb-1" th:text="${task.title}">Title</p>
+                    <p class="text-muted mb-3" th:text="${task.user.username}">User</p>
+                    <div class="d-flex justify-content-between">
+                        <form th:action="@{|/task/tasks/${task.id}/move|}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="dir" value="left"/>
+                            <button class="btn btn-sm btn-secondary">&larr;</button>
+                        </form>
+                        <form th:action="@{|/task/tasks/${task.id}/delete|}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                        <form th:action="@{|/task/tasks/${task.id}/move|}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="dir" value="right"/>
+                            <button class="btn btn-sm btn-primary">&rarr;</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <!-- TASK kartalari -->
-                <div class="d-grid gap-3">
-                    <div class="card shadow-sm"
-                         th:each="task : ${taskList}"
-                         th:if="${task.status.id == status.id}">
+        <!-- COMPLETE COLUMN -->
+        <div class="col">
+            <h5 class="text-center">COMPLETE</h5>
+            <div th:each="task : ${completeTasks}" class="card mb-3">
+                <img th:if="${task.attachment != null}"
+                     th:src="@{/task/attachments/{id}(id=${task.attachment.id})}"
+                     class="card-img-top" alt="Attachment"/>
+                <div th:unless="${task.attachment != null}" class="card-placeholder">No Image</div>
+                <div class="card-body">
+                    <p class="fw-bold mb-1" th:text="${task.title}">Title</p>
+                    <p class="text-muted mb-3" th:text="${task.user.username}">User</p>
+                    <div class="d-flex justify-content-between">
+                        <form th:action="@{|/task/tasks/${task.id}/move|}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="dir" value="left"/>
+                            <button class="btn btn-sm btn-secondary">&larr;</button>
+                        </form>
+                        <form th:action="@{|/task/tasks/${task.id}/delete|}" method="post">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <!-- rasm mavjud bo‘lsa -->
-                        <img class="card-img-top"
-                             th:if="${task.attachment != null}"
-                             th:src="@{/images/{id}(id=${task.attachment.id})}"
-                             alt="task img">
+    </div>
+</div>
 
-                        <!-- rasm yo‘q bo‘lsa -->
-                        <div class="card-img-top bg-secondary bg-opacity-10 py-5 text-center"
-                             th:if="${task.attachment == null}">
-                            <small>No image</small>
-                        </div>
-
-                        <div class="card-body p-2">
-                            <p class="card-title fw-semibold small mb-2" th:text="${task.title}">Task title</p>
-
-                            <!-- user -->
-                            <div class="d-flex align-items-center mb-2">
-                                <img class="rounded-circle me-2"
-                                     style="width:30px;height:30px;object-fit:cover"
-                                     th:if="${task.user != null and task.user.attachment != null}"
-                                     th:src="@{'/images/user/' + ${task.user.attachment.id}}">
-
-                                <img class="rounded-circle me-2"
-                                     style="width:30px;height:30px"
-                                     th:unless="${task.user != null and task.user.attachment != null}"
-                                     src="/default.jpg">
-
-                                <span class="small"
-                                      th:text="${task.user != null ? task.user.username : 'No user'}">Username</span>
-                            </div>
-
-                            <!-- actions -->
-                            <div class="d-flex justify-content-between">
-
-                                <form th:action="@{/task/moveLeft/{id}(id=${task.id})}" method="post">
-                                    <button class="btn btn-sm btn-outline-secondary">&laquo;</button>
-                                </form>
-
-                                <form th:action="@{/task/comment/{id}(id=${task.id})}" method="get">
-                                    <button class="btn btn-sm btn-outline-success">💬</button>
-                                </form>
-
-                                <form th:action="@{/task/update/{id}(id=${task.id})}" method="get"
-                                      sec:authorize="hasAnyRole('ADMIN','MAINTAINER')">
-                                    <button class="btn btn-sm btn-outline-primary">Update</button>
-                                </form>
-
-                                <form th:action="@{/task/moveRight/{id}(id=${task.id})}" method="post">
-                                    <button class="btn btn-sm btn-outline-secondary">&raquo;</button>
-                                </form>
-                            </div>
-
-                        </div><!-- card-body -->
-                    </div><!-- card -->
-                </div><!-- d-grid -->
-
-            </div><!-- column box -->
-        </div><!-- col -->
-    </div><!-- row -->
-</div><!-- container -->
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
