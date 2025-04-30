@@ -23,6 +23,9 @@ public class StatusService {
     public void save(Status status) {
         statusRepository.save(status);
     }
+    public void updateAll(List<Status> statuses) {
+        statusRepository.saveAll(statuses);
+    }
 
 
 }
