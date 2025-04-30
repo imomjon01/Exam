@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uz.pdp.project.entity.Task;
 import uz.pdp.project.entity.User;
@@ -18,6 +19,7 @@ import java.util.List;
 public class TaskController {
     private final TaskService taskService;
 
+    @GetMapping
     public String getTaskActiveTrue(Model model) {
         List<Task> activeStatusTasks = taskService.getActiveStatusTasks();
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
