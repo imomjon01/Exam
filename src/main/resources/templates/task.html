@@ -1,111 +1,100 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Task Board</title>
-    <style>
-        .board {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-            overflow-x: auto;
-        }
+    <title>Task board</title>
 
-        .status-column {
-            flex: 1;
-            background-color: #f4f4f4;
-            padding: 10px;
-            border-radius: 10px;
-            min-width: 300px;
-        }
-
-        .status-title {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .task-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .task-image {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .task-title {
-            margin-top: 8px;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            margin-top: 8px;
-        }
-
-        .user-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-
-        .task-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-
-        .arrow-btn {
-            background: #ddd;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .admin-actions {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-        }
-
-        .admin-actions a {
-            display: inline-block;
-            margin-left: 10px;
-            padding: 8px 16px;
-            font-size: 14px;
-            background-color: #ddd;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            color: black;
-        }
-
-        .admin-actions a:hover {
-            background-color: #bbb;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-<!-- Only show to ADMIN -->
-<div class="admin-actions" sec:authorize="hasRole('ADMIN')">
-    <a th:href="@{/task/add}">Add</a>
-    <a th:href="@{/task/manage-orders}">Manage Orders</a>
+<!-- ADMIN / MAINTAINER uchun menyu -->
+<div class="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2"
+     sec:authorize="hasAnyRole('ADMIN','MAINTAINER')">
+    <a class="btn btn-outline-primary btn-sm" th:href="@{/status/add}">Add status</a>
+    <a class="btn btn-outline-success btn-sm" th:href="@{/task/add}">Add task</a>
+    <a class="btn btn-outline-secondary btn-sm" th:href="@{/task/manage-orders}">Manage orders</a>
 </div>
 
+<!-- BOARD -->
+<div class="container-fluid py-4">
+    <div class="row flex-nowrap gx-3 overflow-auto">
+
+        <!-- STATUS ustuni -->
+        <div class="col-12 col-md-4 col-lg-3" th:each="status : ${statusList}">
+            <div class="border rounded p-3 bg-white h-100 d-flex flex-column">
+
+                <!-- sarlavha -->
+                <h6 class="text-center fw-bold mb-3" th:text="${status.name}">Status</h6>
+
+                <!-- TASK kartalari -->
+                <div class="d-grid gap-3">
+                    <div class="card shadow-sm"
+                         th:each="task : ${taskList}"
+                         th:if="${task.status.id == status.id}">
+
+                        <!-- rasm mavjud bo‘lsa -->
+                        <img class="card-img-top"
+                             th:if="${task.attachment != null}"
+                             th:src="@{/images/{id}(id=${task.attachment.id})}"
+                             alt="task img">
+
+                        <!-- rasm yo‘q bo‘lsa -->
+                        <div class="card-img-top bg-secondary bg-opacity-10 py-5 text-center"
+                             th:if="${task.attachment == null}">
+                            <small>No image</small>
+                        </div>
+
+                        <div class="card-body p-2">
+                            <p class="card-title fw-semibold small mb-2" th:text="${task.title}">Task title</p>
+
+                            <!-- user -->
+                            <div class="d-flex align-items-center mb-2">
+                                <img class="rounded-circle me-2"
+                                     style="width:30px;height:30px;object-fit:cover"
+                                     th:if="${task.user != null and task.user.attachment != null}"
+                                     th:src="@{'/images/user/' + ${task.user.attachment.id}}">
+
+                                <img class="rounded-circle me-2"
+                                     style="width:30px;height:30px"
+                                     th:unless="${task.user != null and task.user.attachment != null}"
+                                     src="/default.jpg">
+
+                                <span class="small"
+                                      th:text="${task.user != null ? task.user.username : 'No user'}">Username</span>
+                            </div>
+
+                            <!-- actions -->
+                            <div class="d-flex justify-content-between">
+
+                                <form th:action="@{/task/moveLeft/{id}(id=${task.id})}" method="post">
+                                    <button class="btn btn-sm btn-outline-secondary">&laquo;</button>
+                                </form>
+
+                                <form th:action="@{/task/comment/{id}(id=${task.id})}" method="get">
+                                    <button class="btn btn-sm btn-outline-success">💬</button>
+                                </form>
+
+                                <form th:action="@{/task/update/{id}(id=${task.id})}" method="get"
+                                      sec:authorize="hasAnyRole('ADMIN','MAINTAINER')">
+                                    <button class="btn btn-sm btn-outline-primary">Update</button>
+                                </form>
+
+                                <form th:action="@{/task/moveRight/{id}(id=${task.id})}" method="post">
+                                    <button class="btn btn-sm btn-outline-secondary">&raquo;</button>
+                                </form>
+                            </div>
+
+                        </div><!-- card-body -->
+                    </div><!-- card -->
+                </div><!-- d-grid -->
+
+            </div><!-- column box -->
+        </div><!-- col -->
+    </div><!-- row -->
+</div><!-- container -->
 
 </body>
 </html>
