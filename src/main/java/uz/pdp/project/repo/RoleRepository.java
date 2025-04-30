@@ -8,7 +8,7 @@ import uz.pdp.project.entity.Roles;
 import java.util.Optional;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
-    Optional<Role> findByRole(Roles role);   // aynan shunday bo‘lishi kerak
+    Role findByRole(String role);  // aynan shunday bo‘lishi kerak
 }
 
 
