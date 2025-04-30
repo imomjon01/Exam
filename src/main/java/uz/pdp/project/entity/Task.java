@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Data
 @AllArgsConstructor
@@ -26,9 +24,6 @@ public class Task {
     private User user;
 
     private String title;
-
-    @OneToMany
-    private List<Comment> comments;
 
 
 }
