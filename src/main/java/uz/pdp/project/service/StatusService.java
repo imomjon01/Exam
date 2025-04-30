@@ -16,4 +16,8 @@ public class StatusService {
         return statusRepository.findAll();
     }
 
+    public List<Status> getActiveStatusesOrdered() {
+        return statusRepository.findAllByActiveTrueOrderByPositionNumber();
+    }
+
 }
