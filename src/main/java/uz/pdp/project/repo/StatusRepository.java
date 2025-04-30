@@ -6,5 +6,5 @@ import uz.pdp.project.entity.Status;
 import java.util.List;
 
 public interface StatusRepository extends JpaRepository<Status, Integer> {
-    List<Status> findByActiveTrue();
+    List<Status> findAllByActiveTrueOrderByPositionNumber();
 }
