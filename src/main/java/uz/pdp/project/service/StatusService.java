@@ -20,4 +20,9 @@ public class StatusService {
         return statusRepository.findAllByActiveTrueOrderByPositionNumber();
     }
 
+    public void save(Status status) {
+        statusRepository.save(status);
+    }
+
+
 }

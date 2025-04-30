@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uz.pdp.project.entity.Status;
@@ -39,16 +40,7 @@ public class TaskController {
         return "task";
     }
 
-    @GetMapping("/add")
-    public String addTask(Model model) {
-        model.addAttribute("task", new Task());
-        return "addTask";
-    }
 
-    @PostMapping("/save")
-    public String saveTask(Task task) {
-        taskService.saveTask(task);
-        return "redirect:/task";
-    }
-    
+
+
 }

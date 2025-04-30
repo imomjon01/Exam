@@ -17,8 +17,11 @@ public class RegisterController {
     }
 
     @PostMapping("/register/process")
-    public String register(@RequestParam String email, @RequestParam String password, HttpSession session) {
-        UserRegisterDto userRegisterDto = new UserRegisterDto(email, password);
+    public String register(@RequestParam String email,
+                           @RequestParam String password,
+                           HttpSession session) {
+        UserRegisterDto userRegisterDto =
+                new UserRegisterDto(email, password);
         session.setAttribute("user", userRegisterDto);
         return "redirect:/verify";
     }
