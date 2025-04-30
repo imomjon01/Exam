@@ -7,8 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import uz.pdp.project.entity.Status;
 import uz.pdp.project.entity.Task;
 import uz.pdp.project.entity.User;
+import uz.pdp.project.service.StatusService;
 import uz.pdp.project.service.TaskService;
 
 import java.util.List;
@@ -18,19 +20,22 @@ import java.util.List;
 @RequestMapping("/task")
 public class TaskController {
     private final TaskService taskService;
+    private final StatusService statusService;
 
     @GetMapping
     public String getTaskActiveTrue(Model model) {
-        List<Task> activeStatusTasks = taskService.getActiveStatusTasks();
+        List<Status> activeStatusesOrdered = statusService.getActiveStatusesOrdered();
+        model.addAttribute("activeStatusesOrdered", activeStatusesOrdered);
+
+        List<Task> allTasks = taskService.getAllTasks();
+        model.addAttribute("allTasks", allTasks);
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             User user = (User) principal;
             model.addAttribute("user", user);
         }
-        model.addAttribute("activeStatusTasks", activeStatusTasks);
         return "task";
     }
-
-
 
 }
