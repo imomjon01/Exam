@@ -28,7 +28,7 @@ public class ManageOrdersController {
     @PostMapping("/update")
     public String updateOrders(@ModelAttribute("wrapper") StatusListWrapper wrapper) {
         statusService.updateAll(wrapper.getStatusList());
-        return "redirect:/orders";
+        return "redirect:/manage/orders";
     }
 
 }
