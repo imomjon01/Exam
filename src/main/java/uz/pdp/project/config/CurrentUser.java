@@ -14,13 +14,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CurrentUser implements UserDetailsService {
     private final UserRepository userRepo;
+
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepo.findByEmail(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> user = userRepo.findByEmail(email);
         if (user.isPresent()) {
             return user.get();
-        }  else {
-            throw new UsernameNotFoundException(username);
+        } else {
+            throw new UsernameNotFoundException(email);
         }
     }
 }
