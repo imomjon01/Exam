@@ -20,7 +20,7 @@ public class TaskService {
 
 
     public List<Task> getActiveStatusTasks() {
-        return taskRepository.findByStatusActiveTrue();
+        return taskRepository.findAllByStatusActiveTrueOrderByStatusPositionNumber();
     }
     public Task saveTask(Task task) {
         return taskRepository.save(task);
