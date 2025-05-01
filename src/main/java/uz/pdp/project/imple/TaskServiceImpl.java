@@ -2,7 +2,9 @@ package uz.pdp.project.imple;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import uz.pdp.project.entity.Status;
 import uz.pdp.project.entity.Task;
+import uz.pdp.project.repo.StatusRepository;
 import uz.pdp.project.repo.TaskRepository;
 import uz.pdp.project.service.TaskService;
 
@@ -14,6 +16,8 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final StatusRepository statusRepository;
+
 
     @Override
     public List<Task> getAllTasks() {
@@ -35,4 +39,13 @@ public class TaskServiceImpl implements TaskService {
     public void deleteTask(Integer id) {
         taskRepository.deleteById(id);
     }
+
+    @Override
+    public void moveTask(Integer taskId, String direction) {
+
+    }
+
+
 }
+
+

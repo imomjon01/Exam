@@ -15,4 +15,8 @@ public interface StatusRepository extends JpaRepository<Status, Integer> {
 
     @Query("SELECT MAX(s.positionNumber) FROM Status s")
     Optional<Integer> findMaxPositionNumber();
+
+    Optional<Status> findFirstByPositionNumberGreaterThanOrderByPositionNumberAsc(int currentPosition);
+
+    Optional<Status> findFirstByPositionNumberLessThanOrderByPositionNumberDesc(int currentPosition);
 }

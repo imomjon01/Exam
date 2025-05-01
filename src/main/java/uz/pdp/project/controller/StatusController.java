@@ -5,10 +5,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.project.entity.Status;
+import uz.pdp.project.entity.Task;
 import uz.pdp.project.repo.StatusRepository;
+import uz.pdp.project.repo.TaskRepository;
 import uz.pdp.project.service.StatusService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -16,6 +19,7 @@ import java.util.List;
 public class StatusController {
     private final StatusService statusService;
     private final StatusRepository statusRepository;
+    private final TaskRepository taskRepository;
 
     @GetMapping("/addStatus")
     public String addStatus(Model model) {

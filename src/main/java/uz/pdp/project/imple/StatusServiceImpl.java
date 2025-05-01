@@ -1,4 +1,4 @@
-package uz.pdp.project.service;
+package uz.pdp.project.imple;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -7,6 +7,8 @@ import uz.pdp.project.entity.Status;
 import uz.pdp.project.repo.StatusRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import uz.pdp.project.service.StatusService;
+
 import java.util.List;
 
 @Service                         // ← only on the impl class

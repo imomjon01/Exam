@@ -7,12 +7,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uz.pdp.project.entity.Attachment;
 import uz.pdp.project.entity.Status;
 import uz.pdp.project.entity.Task;
 import uz.pdp.project.entity.User;
 import uz.pdp.project.repo.AttachmentRepository;
 import uz.pdp.project.repo.StatusRepository;
+import uz.pdp.project.repo.TaskRepository;
 import uz.pdp.project.repo.UserRepository;
 import uz.pdp.project.service.StatusService;
 import uz.pdp.project.service.TaskService;
@@ -20,6 +22,7 @@ import uz.pdp.project.service.TaskService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +34,7 @@ public class TaskController {
     private final StatusService statusService;
     private final AttachmentRepository attachmentRepository;
     private final StatusRepository statusRepository;
+    private final TaskRepository taskRepository;
 
     @GetMapping
     public String viewBoard(Model model) {
@@ -118,4 +122,50 @@ public class TaskController {
     }
 
 
+
+
+    @PostMapping("/move/{id}")
+    public String move(@PathVariable Integer id) {
+        Optional<Task> byId = taskRepository.findById(id);
+        if (byId.isPresent()) {
+            Task task = byId.get();
+            Status currentStatus = task.getStatus();
+            int currentPosition = currentStatus.getPositionNumber();
+
+            Optional<Status> nextStatusOpt = statusRepository
+                    .findFirstByPositionNumberGreaterThanOrderByPositionNumberAsc(currentPosition);
+
+            if (nextStatusOpt.isPresent()) {
+                Status nextStatus = nextStatusOpt.get();
+                task.setStatus(nextStatus);
+                taskRepository.save(task);
+            }
+        }
+        return "redirect:/task";
+    }
+    @PostMapping("/moveBack/{id}")
+    public String moveBack(@PathVariable Integer id) {
+        Optional<Task> byId = taskRepository.findById(id);
+        if (byId.isPresent()) {
+            Task task = byId.get();
+            Status currentStatus = task.getStatus();
+            int currentPosition = currentStatus.getPositionNumber();
+
+            // Avvalgi statusni topish
+            Optional<Status> previousStatusOpt = statusRepository
+                    .findFirstByPositionNumberLessThanOrderByPositionNumberDesc(currentPosition);
+
+            if (previousStatusOpt.isPresent()) {
+                Status previousStatus = previousStatusOpt.get();
+                task.setStatus(previousStatus);
+                taskRepository.save(task);
+            }
+        }
+        return "redirect:/task"; // Foydalanuvchini task ro'yxatiga yo'naltirish
+    }
+
+
+
 }
+
+
