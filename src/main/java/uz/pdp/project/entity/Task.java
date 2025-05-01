@@ -3,12 +3,15 @@ package uz.pdp.project.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Task {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -20,6 +23,8 @@ public class Task {
 
     @ManyToOne
     private User user;
+    @OneToMany
+    private List<Comment> comment;
 
     private String title;
 }
