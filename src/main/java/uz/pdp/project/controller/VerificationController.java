@@ -29,7 +29,6 @@ public class VerificationController {
     @GetMapping("/verify")
     public String verification(HttpSession session) {
         String randomCode = emailSender.randomCode();
-        System.out.println("Random code yaratildi");
         UserRegisterDto user = (UserRegisterDto) session.getAttribute("user");
         String email = user.getEmail();
         emailSender.sendEmail(email, randomCode);

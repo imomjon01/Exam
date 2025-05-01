@@ -2,6 +2,7 @@ package uz.pdp.project.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,11 +18,12 @@ public class CurrentUser implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> user = userRepo.findByEmail(email);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            throw new UsernameNotFoundException(email);
-        }
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
+    }
+
+    public User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepo.findByEmail(email).orElseThrow();
     }
 }

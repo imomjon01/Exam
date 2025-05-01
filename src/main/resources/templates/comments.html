@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Comments</title>
+</head>
+<body>
+<h2 th:text="'Comments for Task: ' + ${task.title}"></h2>
+
+<!-- Existing Comments -->
+<div>
+    <h3>Existing Comments</h3>
+    <ul>
+        <li th:each="comment : ${task.comment}">
+            <p><strong>Date:</strong> <span th:text="${comment.date}"></span></p>
+            <p><strong>User:</strong> <span th:text="${comment.user.username}"></span></p>
+            <p><strong>Content:</strong> <span th:text="${comment.content}"></span></p>
+            <hr>
+        </li>
+    </ul>
+</div>
+
+<!-- Add Comment Form -->
+<div>
+    <h3>Add a New Comment</h3>
+    <form th:action="@{/comments/save/{id}(id=${task.id})}" method="post">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+        <input type="text" name="text" >
+        <button type="submit">Add Comment</button>
+    </form>
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="/task">
+        <button type="button">Back</button>
+    </a>
+</div>
+
+</body>
+</html>
