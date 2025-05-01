@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import uz.pdp.project.entity.Role;
 import uz.pdp.project.entity.User;
 import uz.pdp.project.repo.RoleRepository;
 import uz.pdp.project.repo.UserRepository;
@@ -54,6 +52,7 @@ public class AdminController {
         userRepository.save(user);
         return "redirect:/admin";
     }
+
 
 
 
