@@ -9,5 +9,7 @@ public interface StatusService {
     Status getById(Integer id);
     void save(Status status);
     void updateAll(List<Status> statuses);
+    void saveAll(List<Status> statuses);
+
 
 }

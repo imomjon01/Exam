@@ -43,4 +43,9 @@ public class StatusServiceImpl implements StatusService {
     public void updateAll(List<Status> statuses) {
         statusRepository.saveAll(statuses);
     }
+
+    @Override
+    public void saveAll(List<Status> statuses) {
+        statusRepository.saveAll(statuses);
+    }
 }

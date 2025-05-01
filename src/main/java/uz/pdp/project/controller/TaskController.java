@@ -34,8 +34,8 @@ public class TaskController {
 
     @GetMapping
     public String viewBoard(Model model) {
-
         List<Status> statuses = statusRepository.findAllByActiveTrueOrderByPositionNumber();
+
         model.addAttribute("statusOrdered", statuses);
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

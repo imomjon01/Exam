@@ -17,5 +17,4 @@ public class Status {
     private String name;
     private Boolean active;
     private Integer positionNumber;
-
 }
