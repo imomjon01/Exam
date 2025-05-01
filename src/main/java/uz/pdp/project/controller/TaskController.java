@@ -1,6 +1,8 @@
 package uz.pdp.project.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +18,6 @@ import uz.pdp.project.service.TaskService;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,51 +28,59 @@ public class TaskController {
     private final StatusService statusService;
     private final AttachmentRepository attachmentRepository;
 
+    /** 1) Show the board with the form closed **/
     @GetMapping
     public String viewBoard(Model model) {
-        // Load statuses for the dropdown
-        List<Status> statuses = statusService.getActiveStatusesOrdered();
+        populateModel(model, false);
+        return "task";
+    }
+
+    /** 2) Show the board with the form already open **/
+    @GetMapping("/new")
+    public String newTaskForm(Model model) {
+        populateModel(model, true);
+        return "task";
+    }
+
+    private void populateModel(Model model, boolean openForm) {
+        // All statuses (template will show only active ones)
+        List<Status> statuses = statusService.getAll();
         model.addAttribute("statuses", statuses);
 
-        // Load and partition tasks
-        List<Task> all = taskService.getAllTasks();
-        model.addAttribute("openTasks", all.stream()
-                .filter(t -> "OPEN".equals(t.getStatus().getName()))
-                .collect(Collectors.toList()));
-        model.addAttribute("inProgressTasks", all.stream()
-                .filter(t -> "IN_PROGRESS".equals(t.getStatus().getName()))
-                .collect(Collectors.toList()));
-        model.addAttribute("completeTasks", all.stream()
-                .filter(t -> "COMPLETE".equals(t.getStatus().getName()))
-                .collect(Collectors.toList()));
+        // All tasks
+        List<Task> tasks = taskService.getAllTasks();
+        model.addAttribute("tasks", tasks);
 
-        // ← Initialize newTask with a non-null Status to avoid NPE
+        // Blank Task + non-null Status for form-binding
         Task newTask = new Task();
         newTask.setStatus(new Status());
         model.addAttribute("newTask", newTask);
 
-        return "task";  // Thymeleaf template: resources/templates/task.html
+        // Flag so Thymeleaf can add "show" to the collapse if needed
+        model.addAttribute("openForm", openForm);
     }
 
+    /** 3) Create a new Task **/
     @PostMapping("/tasks")
-    public String addTask(@ModelAttribute("newTask") Task task,
-                          @RequestParam(value = "file", required = false) MultipartFile file,
-                          Authentication auth) throws IOException {
-
-        // Lookup full Status entity by ID
+    public String addTask(
+            @ModelAttribute("newTask") Task task,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            Authentication auth
+    ) throws IOException {
+        // Lookup real Status by ID
         Integer statusId = task.getStatus().getId();
         task.setStatus(statusService.getById(statusId));
 
-        // Set current user
+        // Assign current user
         User me = (User) auth.getPrincipal();
         task.setUser(me);
 
-        // Handle attachment if present
+        // Handle optional file upload
         if (file != null && !file.isEmpty()) {
             Attachment att = new Attachment();
             att.setFileName(file.getOriginalFilename());
             att.setFileType(file.getContentType());
-            att.setContent(file.getBytes());
+            att.setContent(file.getBytes());  // @Lob
             attachmentRepository.save(att);
             task.setAttachment(att);
         }
@@ -80,6 +89,7 @@ public class TaskController {
         return "redirect:/task";
     }
 
+    /** 4) Delete a Task **/
     @PostMapping("/tasks/{id}/delete")
     public String deleteTask(@PathVariable Integer id) {
         taskService.deleteTask(id);
@@ -87,10 +97,12 @@ public class TaskController {
     }
 
     @PostMapping("/tasks/{id}/move")
-    public String moveTask(@PathVariable Integer id,
-                           @RequestParam String dir) {
+    public String moveTask(
+            @PathVariable Integer id,
+            @RequestParam String dir
+    ) {
         Task task = taskService.getTaskById(id);
-        List<Status> statuses = statusService.getActiveStatusesOrdered();
+        List<Status> statuses = statusService.getAll();
         int idx = statuses.indexOf(task.getStatus());
         int max = statuses.size() - 1;
         int newIdx = "right".equals(dir)
@@ -99,5 +111,14 @@ public class TaskController {
         task.setStatus(statuses.get(newIdx));
         taskService.saveTask(task);
         return "redirect:/task";
+    }
+
+    @GetMapping("/attachments/{id}")
+    public ResponseEntity<byte[]> serveAttachment(@PathVariable Integer id) {
+        Attachment att = attachmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No such attachment: " + id));
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(att.getFileType()))
+                .body(att.getContent());
     }
 }

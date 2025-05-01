@@ -10,14 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Attachment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Id @GeneratedValue Integer id;
 
     private String fileName;
     private String fileType;
 
     @Lob
-    @Column(columnDefinition="BYTEA")
     private byte[] content;
 }
+
