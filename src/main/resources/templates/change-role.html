@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Rolni o‘zgartirish</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script>
+    function toggleSaveButton() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"][name="roleIds"]');
+      const saveBtn = document.getElementById("saveBtn");
+
+      const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+      saveBtn.disabled = !isChecked;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      toggleSaveButton(); // load paytida tekshir
+      const checkboxes = document.querySelectorAll('input[type="checkbox"][name="roleIds"]');
+      checkboxes.forEach(cb => cb.addEventListener("change", toggleSaveButton));
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-5">
+  <h2 th:text="'Rolni o‘zgartirish: ' + ${user.email}"></h2>
+
+  <form th:action="@{'/admin/change-role/' + ${user.id}}" method="post">
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+
+    <div class="form-group">
+      <label>Yangi rollarni tanlang:</label>
+      <div th:each="role : ${roles}" class="form-check">
+        <input class="form-check-input"
+               type="checkbox"
+               th:id="'role_' + ${role.id}"
+               th:name="roleIds"
+               th:value="${role.id}"
+               th:checked="${user.roles.contains(role)}">
+        <label class="form-check-label" th:for="'role_' + ${role.id}" th:text="${role.role}"></label>
+      </div>
+    </div>
+
+    <button id="saveBtn" class="btn btn-success mt-3" type="submit">Saqlash</button>
+    <a href="/admin" class="btn btn-secondary mt-3">Bekor qilish</a>
+  </form>
+</div>
+</body>
+</html>
