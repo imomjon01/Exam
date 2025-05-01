@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import uz.pdp.project.entity.Status;
 import uz.pdp.project.service.StatusService;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/status")
@@ -18,8 +20,13 @@ public class StatusController {
 
     @GetMapping("/addStatus")
     public String addStatus(Model model) {
+        List<Status> all = statusService.getAll();
+
+        int maxPosition = all.stream().mapToInt(Status::getPositionNumber).max().orElse(Integer.MIN_VALUE);
         model.addAttribute("status", new Status());
-        return "add";
+        model.addAttribute("maxPosition", maxPosition + 1);
+
+        return "AddStatus";
     }
 
     @PostMapping("/save")
