@@ -3,6 +3,8 @@ package uz.pdp.project.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -21,8 +23,8 @@ public class Task {
 
     @ManyToOne
     private User user;
-    @ManyToOne
-    private Comment comment;
+    @OneToMany
+    private List<Comment> comment;
 
     private String title;
 }
