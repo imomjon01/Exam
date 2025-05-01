@@ -1,14 +1,10 @@
 package uz.pdp.project.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import uz.pdp.project.entity.Attachment;
 import uz.pdp.project.entity.Status;
 import uz.pdp.project.entity.Task;
 import uz.pdp.project.entity.User;
@@ -17,9 +13,7 @@ import uz.pdp.project.repo.StatusRepository;
 import uz.pdp.project.service.StatusService;
 import uz.pdp.project.service.TaskService;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
