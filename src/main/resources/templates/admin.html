@@ -27,11 +27,13 @@
       </td>
       <td>
         <form th:action="@{'/admin/delete/' + ${user.id}}" method="post" style="display:inline;">
+          <input type="hidden" name="_csrf" th:value="${_csrf.token}">
           <button type="submit" class="btn btn-danger btn-sm"
                   onclick="return confirm('Ishonchingiz komilmi?')">O'chirish</button>
         </form>
 
         <form th:action="@{'/admin/change-role/' + ${user.id}}" method="post" style="display:inline;">
+          <input type="hidden" name="_csrf" th:value="${_csrf.token}">
           <button type="submit" class="btn btn-primary btn-sm">Rolni o‘zgartirish</button>
         </form>
       </td>
