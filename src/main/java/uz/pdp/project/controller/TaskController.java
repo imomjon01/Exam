@@ -61,12 +61,10 @@ public class TaskController {
     }
 
 
-
     @PostMapping("/taskSave")
     public String taskSave(@ModelAttribute Task task,
                            @RequestParam("file") MultipartFile file) throws IOException {
 
-        // Foydalanuvchi fayl yuborgan bo‘lsa
         if (!file.isEmpty()) {
             Attachment attachment = new Attachment();
             attachment.setFileName(file.getOriginalFilename());
@@ -74,7 +72,6 @@ public class TaskController {
             attachment.setContent(file.getBytes());
             task.setAttachment(attachment);
         } else {
-            // Default rasmni o‘qib olish
             ClassPathResource defaultImg = new ClassPathResource("static/img/default.png");
             byte[] bytes = Files.readAllBytes(defaultImg.getFile().toPath());
 
@@ -90,6 +87,35 @@ public class TaskController {
         return "redirect:/task";
     }
 
+    @GetMapping("/edit/{id}")
+    public String editTask(@PathVariable Integer id, Model model) {
+        Task task = taskService.getTaskById(id);
+        model.addAttribute("task", task);
+        model.addAttribute("allUsers", userRepository.findAll());
+        model.addAttribute("allStatuses", statusRepository.findAll());
+        return "editTask";
+    }
+
+    @PostMapping("/taskUpdate")
+    public String updateTask(@ModelAttribute Task task,
+                             @RequestParam("file") MultipartFile file) throws IOException {
+
+        if (!file.isEmpty()) {
+            Attachment attachment = new Attachment();
+            attachment.setFileName(file.getOriginalFilename());
+            attachment.setFileType(file.getContentType());
+            attachment.setContent(file.getBytes());
+
+            attachment = attachmentRepository.save(attachment);
+            task.setAttachment(attachment);
+        } else {
+            Task existingTask = taskService.getTaskById(task.getId());
+            task.setAttachment(existingTask.getAttachment());
+        }
+
+        taskService.saveTask(task);
+        return "redirect:/task";
+    }
 
 
 }
