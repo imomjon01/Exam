@@ -2,29 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Status</title>
-    <meta charset="UTF-8">
 </head>
 <body>
-<h1>Yangi Status Qo‘shish</h1>
+<h1>Add New Status</h1>
 
-<form th:action="@{/status/save}" th:object="${status}" method="post">
-    <div>
-        <label for="name">Nomi:</label>
-        <input type="text" th:field="*{name}" id="name" required/>
-    </div>
-
-    <!-- Active maydonini yashirib, avtomatik true qilinadi backendda -->
-    <input type="hidden" th:field="*{active}" value="true"/>
-
-    <!-- Pozitsiya raqamini avtomatik beramiz, foydalanuvchi ko'radi lekin o'zgartira olmaydi -->
-    <div>
-        <label for="positionNumber">Pozitsiya:</label>
-        <input type="number" th:field="*{positionNumber}" th:value="${maxPosition}" readonly/>
-    </div>
-
-    <div>
-        <button type="submit">Saqlash</button>
-    </div>
+<form th:action="@{/status/save}"  method="post">
+    <label for="name">Name:</label>
+    <input type="text"  name="name" required />
+    <br/>
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+    <input type="hidden" name="positionNumber"  th:value="${maxPosition}" />
+    <input type="hidden" name="isActive" th:value="true" />
+    <button type="submit">Save</button>
 </form>
 
 </body>

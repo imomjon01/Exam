@@ -19,6 +19,7 @@ public class Task {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "attachment_id")
+
     private Attachment attachment;
 
     @ManyToOne

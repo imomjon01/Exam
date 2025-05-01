@@ -13,8 +13,8 @@
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div>
       <a sec:authorize="hasRole('ROLE_ADMIN')" href="/admin" class="btn btn-primary">User CRUD</a>
-      <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MAINTAINER')" th:href="@{/status/addStatusPage(maxPosition=${maxPosition})}" class="btn btn-success">Add Status</a>
-      <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MAINTAINER')" href="status/manageOrders" class="btn btn-info">Manage Orders</a>
+      <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MAINTAINER')" href="/status/addStatus" class="btn btn-success">Add Status</a>
+      <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MAINTAINER')" href="/status/manageOrders" class="btn btn-info">Manage Orders</a>
       <a sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MAINTAINER')" href="/task/addTaskPage" class="btn btn-secondary">Add Task</a>
     </div>
     <form th:action="@{/logout}" method="post">
