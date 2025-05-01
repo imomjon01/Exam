@@ -8,7 +8,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Task {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
@@ -20,6 +21,8 @@ public class Task {
 
     @ManyToOne
     private User user;
+    @ManyToOne
+    private Comment comment;
 
     private String title;
 }
