@@ -9,13 +9,16 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 public class Attachment {
-    @Id @GeneratedValue Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
 
     private String fileName;
     private String fileType;
 
-    @Lob
+
     private byte[] content;
 }
 

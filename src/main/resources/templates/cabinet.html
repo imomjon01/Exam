@@ -1,86 +1,10 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cabinet Page</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #74ebd5, #9face6);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .card {
-            background: white;
-            padding: 50px 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 360px;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn {
-            padding: 14px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
-
-        .task-btn {
-            background-color: #4CAF50;
-        }
-
-        .profile-btn {
-            background-color: #2196F3;
-        }
-
-        .logout-btn {
-            background-color: #f44336;
-        }
-
-        .btn:hover {
-            transform: scale(1.03);
-        }
-    </style>
+    <title>Title</title>
 </head>
 <body>
-<div class="card">
-    <h1>Welcome to Your Cabinet</h1>
-    <div class="btn-group">
-        <!-- Faqat ro'yxatdan o'tmagan foydalanuvchilar uchun ko'rinadi -->
-        <sec:authorize access="isAnonymous()">
-            <a class="btn profile-btn" href="/register">Register</a>
-        </sec:authorize>
 
-        <!-- Har doim ko'rinadi -->
-        <a class="btn task-btn" href="/task">Go to Tasks</a>
-        <a class="btn logout-btn" href="/logout">Logout</a>
-    </div>
-</div>
 </body>
 </html>

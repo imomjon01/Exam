@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Add Task</title>
 </head>
 <body>
-<h2>Add New Task</h2>
-
-<form th:action="@{/task/taskSave}" method="post" enctype="multipart/form-data" th:object="${task}">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
+<h1>Add Task</h1>
+<form th:action="@{/task/taskSave}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}">
     <label>Title:</label>
-    <input type="text" th:field="*{title}" required/><br/>
+    <input type="text" name="title" required/><br/>
 
-    <label>Assign to User:</label>
-    <select th:field="*{user}" required>
-        <option th:each="user : ${allUsers}" th:value="${user.id}" th:text="${user.username}"></option>
+    <label>User:</label>
+    <select name="userId" required>
+        <option th:each="user : ${allUsers}" th:value="${user.id}" th:text="${user.username}">User</option>
     </select><br/>
+
     <label>Status:</label>
-    <select th:field="*{status}" required>
-        <option th:each="status : ${allStatuses}" th:value="${status.id}" th:text="${status.name}"></option>
+    <select name="statusId" required>
+        <option th:each="status : ${allStatuses}" th:value="${status.id}" th:text="${status.name}">Status</option>
     </select><br/>
 
-    <label>Attachment:</label>
+    <label>Attachment (Image):</label>
     <input type="file" name="file"/><br/>
 
-    <button type="submit">Save Task</button>
+    <button type="submit">Save</button>
 </form>
-
 </body>
 </html>

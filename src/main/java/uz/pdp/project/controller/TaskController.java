@@ -20,7 +20,9 @@ import uz.pdp.project.service.StatusService;
 import uz.pdp.project.service.TaskService;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,38 +60,43 @@ public class TaskController {
 
     @GetMapping("/addTaskPage")
     public String addTaskPage(Model model) {
-        model.addAttribute("task", new Task());
         model.addAttribute("allUsers", userRepository.findAll());
-        model.addAttribute("allStatuses", statusRepository.findAll());
+        List<Status> all = statusRepository.findAll();
+        if (all.isEmpty()) {
+            return "redirect:/task";
+        }
+        model.addAttribute("allStatuses", all);
         return "addTask";
     }
 
 
     @PostMapping("/taskSave")
-    public String taskSave(@ModelAttribute Task task,
-                           @RequestParam("file") MultipartFile file) throws IOException {
+    public String taskSave(@RequestParam String title,
+                           @RequestParam Integer userId,
+                           @RequestParam Integer statusId,
+                           @RequestParam(required = false) MultipartFile file) throws IOException {
+        Task task = new Task();
 
-        if (!file.isEmpty()) {
-            Attachment attachment = new Attachment();
+        task.setTitle(title);
+        userRepository.findById(userId).ifPresent(task::setUser);
+        statusRepository.findById(statusId).ifPresent(task::setStatus);
+        Attachment attachment = new Attachment();
+        if (file != null && !file.isEmpty()) {
             attachment.setFileName(file.getOriginalFilename());
             attachment.setFileType(file.getContentType());
             attachment.setContent(file.getBytes());
-            task.setAttachment(attachment);
         } else {
-            ClassPathResource defaultImg = new ClassPathResource("static/img/default.png");
-            byte[] bytes = Files.readAllBytes(defaultImg.getFile().toPath());
-
-            Attachment defaultAttachment = new Attachment();
-            defaultAttachment.setFileName("default.png");
-            defaultAttachment.setFileType("image/png");
-            defaultAttachment.setContent(bytes);
-
-            task.setAttachment(defaultAttachment);
+            ClassPathResource imgFile = new ClassPathResource("static/task.png");
+            attachment.setFileName("task.png");
+            attachment.setFileType("image/png");
+            attachment.setContent(imgFile.getInputStream().readAllBytes());
         }
-
-        taskService.saveTask(task);
+        task.setAttachment(attachment);
+        task.setComment(new ArrayList<>());
+        taskRepository.save(task);
         return "redirect:/task";
     }
+
 
     @GetMapping("/edit/{id}")
     public String editTask(@PathVariable Integer id, Model model) {
@@ -122,8 +129,6 @@ public class TaskController {
     }
 
 
-
-
     @PostMapping("/move/{id}")
     public String move(@PathVariable Integer id) {
         Optional<Task> byId = taskRepository.findById(id);
@@ -143,6 +148,7 @@ public class TaskController {
         }
         return "redirect:/task";
     }
+
     @PostMapping("/moveBack/{id}")
     public String moveBack(@PathVariable Integer id) {
         Optional<Task> byId = taskRepository.findById(id);
@@ -163,7 +169,6 @@ public class TaskController {
         }
         return "redirect:/task"; // Foydalanuvchini task ro'yxatiga yo'naltirish
     }
-
 
 
 }
