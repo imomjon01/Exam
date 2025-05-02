@@ -1,6 +1,7 @@
 package uz.pdp.project.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.Optional;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/status")
+@PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
 public class StatusController {
     private final StatusService statusService;
     private final StatusRepository statusRepository;

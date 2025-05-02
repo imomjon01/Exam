@@ -19,7 +19,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers("/register", "/cabinet", "/", "/",
+                            .requestMatchers("/register", "/cabinet", "/",
                                     "/task.png",
                                     "/default.jpg", "/verify", "/register/process",
                                     "/verify/process").permitAll()

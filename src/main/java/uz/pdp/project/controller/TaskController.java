@@ -2,12 +2,12 @@ package uz.pdp.project.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import uz.pdp.project.entity.Attachment;
 import uz.pdp.project.entity.Status;
 import uz.pdp.project.entity.Task;
@@ -20,8 +20,6 @@ import uz.pdp.project.service.StatusService;
 import uz.pdp.project.service.TaskService;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +55,7 @@ public class TaskController {
         model.addAttribute("user", user);
         return "task";
     }
-
+    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
     @GetMapping("/addTaskPage")
     public String addTaskPage(Model model) {
         model.addAttribute("allUsers", userRepository.findAll());
@@ -69,7 +67,7 @@ public class TaskController {
         return "addTask";
     }
 
-
+    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
     @PostMapping("/taskSave")
     public String taskSave(@RequestParam String title,
                            @RequestParam Integer userId,
@@ -97,7 +95,7 @@ public class TaskController {
         return "redirect:/task";
     }
 
-
+    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
     @GetMapping("/edit/{id}")
     public String editTask(@PathVariable Integer id, Model model) {
         Task task = taskService.getTaskById(id);
@@ -106,11 +104,10 @@ public class TaskController {
         model.addAttribute("allStatuses", statusRepository.findAll());
         return "editTask";
     }
-
+    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
     @PostMapping("/taskUpdate")
     public String updateTask(@ModelAttribute Task task,
                              @RequestParam("file") MultipartFile file) throws IOException {
-
         if (!file.isEmpty()) {
             Attachment attachment = new Attachment();
             attachment.setFileName(file.getOriginalFilename());
@@ -128,7 +125,7 @@ public class TaskController {
         return "redirect:/task";
     }
 
-
+    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
     @PostMapping("/move/{id}")
     public String move(@PathVariable Integer id) {
         Optional<Task> byId = taskRepository.findById(id);
@@ -148,7 +145,7 @@ public class TaskController {
         }
         return "redirect:/task";
     }
-
+    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
     @PostMapping("/moveBack/{id}")
     public String moveBack(@PathVariable Integer id) {
         Optional<Task> byId = taskRepository.findById(id);
@@ -156,7 +153,6 @@ public class TaskController {
             Task task = byId.get();
             Status currentStatus = task.getStatus();
             int currentPosition = currentStatus.getPositionNumber();
-
             // Avvalgi statusni topish
             Optional<Status> previousStatusOpt = statusRepository
                     .findFirstByPositionNumberLessThanOrderByPositionNumberDesc(currentPosition);
@@ -169,8 +165,6 @@ public class TaskController {
         }
         return "redirect:/task"; // Foydalanuvchini task ro'yxatiga yo'naltirish
     }
-
-
 }
 
 

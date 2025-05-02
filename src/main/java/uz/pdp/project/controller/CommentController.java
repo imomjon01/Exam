@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.project.config.CurrentUser;
 import uz.pdp.project.entity.Comment;
 import uz.pdp.project.entity.Task;
 import uz.pdp.project.entity.User;
