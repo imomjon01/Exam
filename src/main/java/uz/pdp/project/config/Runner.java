@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.project.dto.UserRegisterDto;
 import uz.pdp.project.entity.Role;
 import uz.pdp.project.entity.Roles;
@@ -44,25 +45,32 @@ public class Runner implements CommandLineRunner {
             roleRepository.saveAll(all);
 
             if (users.isEmpty()) {
+                List<User> userList = new ArrayList<>();
 
                 User user = new User();
                 user.setId(null);
                 user.setEmail("imomjonuzb@gmail.com");
                 user.setPassword(passwordEncoder.encode("123"));
                 user.setRoles(all);
-                userRepository.save(user);
+
                 User user1 = new User();
-                user.setId(null);
-                user.setEmail("mirzabeknormakhmatov03@gmail.com");
-                user.setPassword(passwordEncoder.encode("123"));
-                user.setRoles(all);
-                userRepository.save(user1);
+                user1.setId(null);
+                user1.setEmail("mirzabeknormakhmatov03@gmail.com");
+                user1.setPassword(passwordEncoder.encode("123"));
+                user1.setRoles(all);
+
                 User user2 = new User();
-                user.setId(null);
-                user.setEmail("dovudtoshxojaev@gmail.com");
-                user.setPassword(passwordEncoder.encode("123"));
-                user.setRoles(all);
-                userRepository.save(user2);
+                user2.setId(null);
+                user2.setEmail("dovudtoshxojaev@gmail.com");
+                user2.setPassword(passwordEncoder.encode("123"));
+                user2.setRoles(all);
+
+                userList.add(user);
+                userList.add(user1);
+                userList.add(user2);
+                userRepository.saveAll(userList);
+
+
             }
         }
 
