@@ -16,13 +16,15 @@ import java.util.Set;
 @Controller
 @RequestMapping("/manageOrders")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'MAINTAINER')")
 public class ManageOrdersController {
     private final StatusService statusService;
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'MAINTAINER')")
     @GetMapping
     public String manageOrders(Model model) {
         List<Status> all = statusService.getAll();
+        if (all.isEmpty()) {
+            return "redirect:/task";
+        }
         StatusListWrapper wrapper = new StatusListWrapper();
         wrapper.setStatusList(all);
         model.addAttribute("wrapper", wrapper);
@@ -30,7 +32,6 @@ public class ManageOrdersController {
     }
 
     @PostMapping("/update")
-    @PreAuthorize("hasAnyRole('ADMIN','MAINTAINER')")
     public String updateStatuses(@ModelAttribute StatusListWrapper wrapper, Model model) {
         List<Status> statuses = wrapper.getStatusList();
 

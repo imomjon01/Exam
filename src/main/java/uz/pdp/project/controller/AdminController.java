@@ -1,24 +1,31 @@
 package uz.pdp.project.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.project.entity.Role;
 import uz.pdp.project.entity.User;
+import uz.pdp.project.repo.CommentRepository;
 import uz.pdp.project.repo.RoleRepository;
+import uz.pdp.project.repo.TaskRepository;
 import uz.pdp.project.repo.UserRepository;
 
+import java.beans.Transient;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final CommentRepository commentRepository;
+    private final TaskRepository taskRepository;
 
     @GetMapping
     public String admin(Model model) {
@@ -53,20 +60,13 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-
-
-
-
-
-
     @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Integer id, Model model) {
+    public String delete(@PathVariable Integer id) {
         Optional<User> user = userRepository.findById(id);
+        //biron entity ulangan bolsa xato beradi
         if (user.isPresent()) {
             userRepository.delete(user.get());
         }
         return "redirect:/admin";
     }
-
-
 }

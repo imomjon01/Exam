@@ -21,7 +21,6 @@ public class User implements UserDetails {
     private Integer id;
     private String email;
     private String password;
-
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
 
@@ -30,12 +29,8 @@ public class User implements UserDetails {
 
     @Transient
     private String passwordRepeat;
-
     @Transient
     private boolean verificationCode;//code uchun
-
-
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -51,5 +46,4 @@ public class User implements UserDetails {
     public String getUsername() {
         return this.email;
     }
-
 }

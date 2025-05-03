@@ -9,8 +9,6 @@ import uz.pdp.project.dto.UserRegisterDto;
 @Controller
 @RequiredArgsConstructor
 public class RegisterController {
-
-
     @GetMapping("/register")
     public String register() {
         return "register";
