@@ -55,6 +55,7 @@ public class TaskController {
         model.addAttribute("user", user);
         return "task";
     }
+
     @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
     @GetMapping("/addTaskPage")
     public String addTaskPage(Model model) {
@@ -104,6 +105,7 @@ public class TaskController {
         model.addAttribute("allStatuses", statusRepository.findAll());
         return "editTask";
     }
+
     @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
     @PostMapping("/taskUpdate")
     public String updateTask(@ModelAttribute Task task,
@@ -125,7 +127,8 @@ public class TaskController {
         return "redirect:/task";
     }
 
-    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
+
+    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN','PROGRAMMER')")
     @PostMapping("/move/{id}")
     public String move(@PathVariable Integer id) {
         Optional<Task> byId = taskRepository.findById(id);
@@ -133,19 +136,20 @@ public class TaskController {
             Task task = byId.get();
             Status currentStatus = task.getStatus();
             int currentPosition = currentStatus.getPositionNumber();
+            // Avvalgi statusni topish
+            Optional<Status> previousStatusOpt = statusRepository
+                    .moveRight(currentPosition);
 
-            Optional<Status> nextStatusOpt = statusRepository
-                    .findFirstByPositionNumberGreaterThanOrderByPositionNumberAsc(currentPosition);
-
-            if (nextStatusOpt.isPresent()) {
-                Status nextStatus = nextStatusOpt.get();
-                task.setStatus(nextStatus);
+            if (previousStatusOpt.isPresent()) {
+                Status previousStatus = previousStatusOpt.get();
+                task.setStatus(previousStatus);
                 taskRepository.save(task);
             }
         }
-        return "redirect:/task";
+        return "redirect:/task"; // Foydalanuvchini task ro'yxatiga yo'naltirish
     }
-    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN')")
+
+    @PreAuthorize("hasAnyRole('MAINTAINER','ADMIN','PROGRAMMER')")
     @PostMapping("/moveBack/{id}")
     public String moveBack(@PathVariable Integer id) {
         Optional<Task> byId = taskRepository.findById(id);
@@ -155,7 +159,7 @@ public class TaskController {
             int currentPosition = currentStatus.getPositionNumber();
             // Avvalgi statusni topish
             Optional<Status> previousStatusOpt = statusRepository
-                    .findFirstByPositionNumberLessThanOrderByPositionNumberDesc(currentPosition);
+                    .moveLeft(currentPosition);
 
             if (previousStatusOpt.isPresent()) {
                 Status previousStatus = previousStatusOpt.get();

@@ -2,6 +2,7 @@ package uz.pdp.project.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import uz.pdp.project.entity.Status;
 
 import java.util.List;
@@ -18,5 +19,22 @@ public interface StatusRepository extends JpaRepository<Status, Integer> {
 
     Optional<Status> findFirstByPositionNumberGreaterThanOrderByPositionNumberAsc(int currentPosition);
 
-    Optional<Status> findFirstByPositionNumberLessThanOrderByPositionNumberDesc(int currentPosition);
+    @Query("""
+                SELECT s
+                FROM Status s
+                WHERE s.positionNumber < :givenValue AND s.active = true
+                ORDER BY s.positionNumber DESC
+                LIMIT 1
+            """)
+    Optional<Status> moveLeft(@Param("givenValue") int currentPosition);
+
+    @Query("""
+                SELECT s
+                FROM Status s
+                WHERE s.positionNumber > :givenValue AND s.active = true
+                ORDER BY s.positionNumber ASC
+                LIMIT 1
+            """)
+    Optional<Status> moveRight(@Param("givenValue") int currentPosition);
+
 }

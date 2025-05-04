@@ -86,12 +86,6 @@
         </dependency>
 
 
-
-
-
-
-
-
         <!-- (ixtiyoriy) Elektron pochta yuborish -->
         <!--
         <dependency>
@@ -103,6 +97,7 @@
 
 
     <build>
+        <finalName>app</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
