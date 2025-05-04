@@ -1,0 +1,40 @@
+package uz.pdp.project.repo;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import uz.pdp.project.entity.Status;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface StatusRepository extends JpaRepository<Status, Integer> {
+
+    List<Status> findAllByActiveTrueOrderByPositionNumber();
+
+    Optional<Status> findByName(String name);
+
+    @Query("SELECT MAX(s.positionNumber) FROM Status s")
+    Optional<Integer> findMaxPositionNumber();
+
+    Optional<Status> findFirstByPositionNumberGreaterThanOrderByPositionNumberAsc(int currentPosition);
+
+    @Query("""
+                SELECT s
+                FROM Status s
+                WHERE s.positionNumber < :givenValue AND s.active = true
+                ORDER BY s.positionNumber DESC
+                LIMIT 1
+            """)
+    Optional<Status> moveLeft(@Param("givenValue") int currentPosition);
+
+    @Query("""
+                SELECT s
+                FROM Status s
+                WHERE s.positionNumber > :givenValue AND s.active = true
+                ORDER BY s.positionNumber ASC
+                LIMIT 1
+            """)
+    Optional<Status> moveRight(@Param("givenValue") int currentPosition);
+
+}

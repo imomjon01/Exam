@@ -2,23 +2,34 @@ package uz.pdp.project.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(registry -> {
-            registry
-                    .requestMatchers("login","/").permitAll()
-                    .anyRequest().authenticated();
-        });
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> {
+                    auth
+                            .requestMatchers("/register", "/cabinet", "/",
+                                    "/task.png",
+                                    "/default.jpg", "/verify", "/register/process",
+                                    "/verify/process").permitAll()
+                            .requestMatchers("/css/**", "/js/**", "/task/**").permitAll()
+                            .anyRequest().authenticated();
+
+                });
 
         http.formLogin(formLogin -> {
-            /*            formLogin.defaultSuccessUrl("#", true).permitAll();*/
-
+            formLogin.defaultSuccessUrl("/", true);
         });
 
         http.logout(logout ->
@@ -30,5 +41,10 @@ public class SecurityConfig {
 
 
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
     }
 }

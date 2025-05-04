@@ -4,21 +4,20 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
+
+import java.time.LocalDateTime;
 
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Table(name = "roles")
-public class Role implements GrantedAuthority {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String role;
 
-    @Override
-    public String getAuthority() {
-        return "ROLE_" + role;
-    }
+    private LocalDateTime date;
+    private String content;
+    @ManyToOne
+    private User user;
 }
